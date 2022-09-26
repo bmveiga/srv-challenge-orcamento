@@ -1,5 +1,6 @@
 package com.bmveiga.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -19,30 +20,76 @@ public class ReceitaService {
 	@Autowired
 	private ReceitaRepository repository;
 	
-	public void isDuplicado(Receita receita) throws Exception {
+	public Receita cadastrarReceita(Receita receita) throws Exception {
+		isDuplicado(receita, receita.getId());
+		repository.save(receita);
+		return receita;
+	}
+	
+	public List<Receita> buscarTodasReceitas(){
+		return repository.findAll();
+	}
+	
+	public Optional<Receita> buscarPorId(Long id) {
+		return repository.findById(id);
+	}
+	
+	public void deletarPorId(Long id) {
+		repository.deleteById(id);
+	}
+	
+	public Receita alterarReceita(Long id, Receita receita) throws Exception {
+		isDuplicado(receita, id);
+		Receita original = validarReceitaExiste(id);
+		BeanUtils.copyProperties(receita, original, "id");
+		return repository.save(original);
+	}
+	
+	public void isDuplicado(Receita receita, Long id) throws Exception {
 		List<Receita> duplicatas = repository.findAllByDescricao(receita.getDescricao());
 		
 		if(!duplicatas.isEmpty()) {
 			int mesEntrada = capturarMes(receita.getData());
+			int anoEntrada = capturarAno(receita.getData());
 			
 			for (Receita duplicada : duplicatas) {
+				Long idAtual = duplicada.getId();
 				int mesDuplicata = capturarMes(duplicada.getData());
-				if(mesDuplicata == mesEntrada) {
+				int anoReceita = capturarAno(duplicada.getData());
+				if(id != idAtual && anoReceita == anoEntrada && mesDuplicata == mesEntrada) {
 					throw new Exception("Entrada duplicada!");
 				}
 			}
 		}
 	}
 	
-	public Receita alterarReceita(Long id, Receita receita) throws Exception {
-		isDuplicado(receita);
-		Receita original = validarReceitaExiste(id);
-		BeanUtils.copyProperties(receita, original, "id");
-		return repository.save(original);
-		
+	public List<Receita> buscarPorDescricao(String descricao){
+		return repository.findAllByDescricao(descricao);
 	}
 	
-	public int capturarMes(Date data) {
+	public List<Receita> buscarPorMes(int mes, int ano){
+		List<Receita> receitas = repository.findAll();
+		List<Receita> receitasFiltradas = new ArrayList<>();
+		
+		for (Receita receita : receitas) {
+			int anoReceita = capturarAno(receita.getData());
+			if(anoReceita == ano) {
+				int mesReceita = capturarMes(receita.getData());
+				if(mesReceita == mes) {
+					receitasFiltradas.add(receita);
+				}
+			}
+		}
+		return receitasFiltradas;
+	}
+	
+	private int capturarAno(Date data) {
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTime(data);
+		return gc.get(gc.YEAR);
+	}
+
+	private int capturarMes(Date data) {
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(data);
 		return gc.get(gc.MONTH);

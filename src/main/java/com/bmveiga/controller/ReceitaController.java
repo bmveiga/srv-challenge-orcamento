@@ -13,18 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bmveiga.model.Receita;
-import com.bmveiga.repository.ReceitaRepository;
 import com.bmveiga.service.ReceitaService;
 
 @RestController
 @RequestMapping("receitas")
 public class ReceitaController {
-
-	@Autowired
-	private ReceitaRepository repository;
 	
 	@Autowired
 	private ReceitaService service;
@@ -32,8 +29,7 @@ public class ReceitaController {
 	@PostMapping
 	public ResponseEntity<Receita> novaReceita (@RequestBody Receita entrada){
 		try {
-			service.isDuplicado(entrada);
-			repository.save(entrada);			
+			service.cadastrarReceita(entrada);		
 			return new ResponseEntity<Receita>(entrada, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -41,13 +37,16 @@ public class ReceitaController {
 	}
 	
 	@GetMapping
-	public List<Receita> buscarTodasReceitas(){
-		return repository.findAll();
+	public List<Receita> buscarTodasReceitas(@RequestParam(required = false) String descricao){
+		if(descricao != null) {
+			return service.buscarPorDescricao(descricao);
+		}
+		return service.buscarTodasReceitas();
 	}
 	
 	@GetMapping("/{id}")
 	public Optional<Receita> buscarPorId(@PathVariable Long id) {
-		return repository.findById(id);
+		return service.buscarPorId(id);
 	}
 	
 	@PutMapping("/{id}")
@@ -62,7 +61,12 @@ public class ReceitaController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deletarPorId(@PathVariable Long id) {
-		repository.deleteById(id);
+		service.deletarPorId(id);
 		return ResponseEntity.noContent().build();
+	}
+	
+	@GetMapping("/{ano}/{mes}")
+	public List<Receita> buscarPorMes(@PathVariable int ano, @PathVariable int mes){
+		return service.buscarPorMes(mes, ano);
 	}
 }

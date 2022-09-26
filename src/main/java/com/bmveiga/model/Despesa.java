@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.bmveiga.enums.Categoria;
 
 @Entity(name = "tb_despesa")
 public class Despesa implements Serializable {
@@ -19,25 +20,29 @@ public class Despesa implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(name = "descricao", nullable = false, length = 180)
 	private String descricao;
-	
+
 	@Column(nullable = false)
 	private Double valor;
-	
+
 	@Column(name = "data", nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date data;
 
+	@Column(name = "categoria")
+	private Categoria categoria;
+
 	public Despesa() {
 	}
 
-	public Despesa(Long id, String descricao, Double valor, Date data) {
+	public Despesa(Long id, String descricao, Double valor, Date data, Categoria categoria) {
 		this.id = id;
 		this.descricao = descricao;
 		this.valor = valor;
 		this.data = data;
+		this.categoria = categoria;
 	}
 
 	public Long getId() {
@@ -70,6 +75,14 @@ public class Despesa implements Serializable {
 
 	public void setData(Date data) {
 		this.data = data;
+	}
+
+	public Categoria getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
 	}
 
 }

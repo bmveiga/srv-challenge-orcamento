@@ -3,4 +3,5 @@
   `descricao` longtext NOT NULL,
   `Double` decimal(65,2) NOT NULL,
   `data` datetime(6) NOT NULL
+  `categoria` ENUM('ALIMENTACAO', 'SAUDE', 'MORADIA', 'TRANSPORTE', 'EDUCACAO', 'LAZER', 'IMPREVISTOS',	'OUTROS')
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
