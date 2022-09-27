@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bmveiga.model.Despesa;
+import com.bmveiga.model.Receita;
 import com.bmveiga.service.DespesaService;
 
 @RestController
@@ -64,5 +65,10 @@ public class DespesaController {
 	public ResponseEntity<Void> deletarPorId(@PathVariable Long id) {
 		service.deletarPorId(id);
 		return ResponseEntity.noContent().build();
+	}
+	
+	@GetMapping("/{ano}/{mes}")
+	public List<Despesa> buscarPorMes(@PathVariable int ano, @PathVariable int mes){
+		return service.buscarPorMes(mes, ano);
 	}
 }

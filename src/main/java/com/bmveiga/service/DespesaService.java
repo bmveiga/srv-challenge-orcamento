@@ -1,5 +1,6 @@
 package com.bmveiga.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.bmveiga.enums.Categoria;
 import com.bmveiga.model.Despesa;
+import com.bmveiga.model.Receita;
 import com.bmveiga.repository.DespesaRepository;
 
 @Service
@@ -76,6 +78,22 @@ public class DespesaService {
 		return repository.findAllByDescricao(descricao);
 	}
 
+	public List<Despesa> buscarPorMes(int mes, int ano){
+		List<Despesa> despesas = buscarTodasDespesas();
+		List<Despesa> despesasFiltradas = new ArrayList<>();
+		
+		for (Despesa despesa : despesas) {
+			int anoDespesa = capturarAno(despesa.getData());
+			if(anoDespesa == ano) {
+				int mesDespesa = capturarMes(despesa.getData());
+				if(mesDespesa == mes - 1) {
+					despesasFiltradas.add(despesa);
+				}
+			}
+		}
+		return despesasFiltradas;
+	}
+	
 	private int capturarMes(Date data) {
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(data);

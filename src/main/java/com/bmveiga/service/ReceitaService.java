@@ -68,14 +68,14 @@ public class ReceitaService {
 	}
 	
 	public List<Receita> buscarPorMes(int mes, int ano){
-		List<Receita> receitas = repository.findAll();
+		List<Receita> receitas = buscarTodasReceitas();
 		List<Receita> receitasFiltradas = new ArrayList<>();
 		
 		for (Receita receita : receitas) {
 			int anoReceita = capturarAno(receita.getData());
 			if(anoReceita == ano) {
 				int mesReceita = capturarMes(receita.getData());
-				if(mesReceita == mes) {
+				if(mesReceita == mes - 1) {
 					receitasFiltradas.add(receita);
 				}
 			}
